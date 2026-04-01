@@ -23,9 +23,10 @@ interface Props {
   onSave: (data: Omit<Task, 'id' | 'completed' | 'createdAt'>) => void;
   onUpdate: (id: string, data: Partial<Task>) => void;
   onClose: () => void;
+  hideRank?: boolean;
 }
 
-export const TaskModal: FC<Props> = ({ task, defaultDate, onSave, onUpdate, onClose }) => {
+export const TaskModal: FC<Props> = ({ task, defaultDate, onSave, onUpdate, onClose, hideRank }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [rank, setRank] = useState<Rank | null>(task?.rank ?? null);
@@ -97,17 +98,19 @@ export const TaskModal: FC<Props> = ({ task, defaultDate, onSave, onUpdate, onCl
               placeholder="Optional details..." rows={2}
               className="w-full bg-white/80 border border-stone-200 rounded-xl px-4 py-2.5 text-sm text-stone-800 placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-300 resize-none" />
           </div>
-          <div>
-            <label className="block text-xs font-medium text-stone-500 mb-2">Rank</label>
-            <div className="grid grid-cols-3 gap-2">
-              {RANKS.map(r => (
-                <button key={r} type="button" onClick={() => setRank(r)}
-                  className={`py-2 rounded-xl text-xs font-semibold tracking-wider ring-1 transition-all ${rankStyle[r]} ${rank === r ? 'ring-2 scale-105 shadow-sm' : 'opacity-50'}`}>
-                  {r}
-                </button>
-              ))}
+          {!hideRank && (
+            <div>
+              <label className="block text-xs font-medium text-stone-500 mb-2">Rank</label>
+              <div className="grid grid-cols-3 gap-2">
+                {RANKS.map(r => (
+                  <button key={r} type="button" onClick={() => setRank(r)}
+                    className={`py-2 rounded-xl text-xs font-semibold tracking-wider ring-1 transition-all ${rankStyle[r]} ${rank === r ? 'ring-2 scale-105 shadow-sm' : 'opacity-50'}`}>
+                    {r}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
           <div>
             <label className="block text-xs font-medium text-stone-500 mb-1.5">Date</label>
             <input type="date" value={date} onChange={e => setDate(e.target.value)}

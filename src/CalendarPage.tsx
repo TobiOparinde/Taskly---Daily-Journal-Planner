@@ -116,7 +116,7 @@ export const CalendarPage: FC<Props> = ({ tasks, onAdd, onUpdate, onToggle }) =>
 
       {modalOpen && (
         <TaskModal task={editTask} defaultDate={toDateStr(selected)}
-          onSave={onAdd} onUpdate={onUpdate}
+          onSave={onAdd} onUpdate={onUpdate} hideRank
           onClose={() => { setModalOpen(false); setEditTask(null); }} />
       )}
     </div>
