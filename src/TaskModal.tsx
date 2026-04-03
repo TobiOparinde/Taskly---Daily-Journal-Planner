@@ -55,13 +55,18 @@ export const TaskModal: FC<Props> = ({ task, defaultDate, onSave, onUpdate, onCl
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    doSave();
+  };
+
+  const doSave = () => {
     if (!title.trim()) return;
+    // Close first, then save
+    onClose();
     if (task) {
       onUpdate(task.id, { title: title.trim(), description: description.trim() || undefined, rank: rank ?? undefined, date });
     } else {
       onSave({ title: title.trim(), description: description.trim() || undefined, rank: rank ?? undefined, date });
     }
-    onClose();
   };
 
   return (
@@ -116,7 +121,7 @@ export const TaskModal: FC<Props> = ({ task, defaultDate, onSave, onUpdate, onCl
             <input type="date" value={date} onChange={e => setDate(e.target.value)}
               className="w-full bg-white/80 border border-stone-200 rounded-xl px-4 py-2.5 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-300" />
           </div>
-          <button type="submit"
+          <button type="button" onClick={doSave}
             className="w-full bg-stone-700 hover:bg-stone-800 text-white font-semibold py-3 rounded-xl text-sm transition-colors shadow-sm">
             {task ? 'Save Changes' : 'Add Task'}
           </button>
