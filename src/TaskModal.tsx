@@ -61,8 +61,7 @@ export const TaskModal: FC<Props> = ({ task, defaultDate, onSave, onUpdate, onCl
     } else {
       onSave({ title: title.trim(), description: description.trim() || undefined, rank: rank ?? undefined, date });
     }
-    setVisible(false);
-    setTimeout(() => onClose(), 300);
+    onClose();
   };
 
   return (
