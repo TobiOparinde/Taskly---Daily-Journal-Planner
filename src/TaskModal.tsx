@@ -60,13 +60,16 @@ export const TaskModal: FC<Props> = ({ task, defaultDate, onSave, onUpdate, onCl
 
   const doSave = () => {
     if (!title.trim()) return;
-    // Close first, then save
-    onClose();
-    if (task) {
-      onUpdate(task.id, { title: title.trim(), description: description.trim() || undefined, rank: rank ?? undefined, date });
-    } else {
-      onSave({ title: title.trim(), description: description.trim() || undefined, rank: rank ?? undefined, date });
-    }
+    // Slide down, then close + save after animation
+    setVisible(false);
+    setTimeout(() => {
+      onClose();
+      if (task) {
+        onUpdate(task.id, { title: title.trim(), description: description.trim() || undefined, rank: rank ?? undefined, date });
+      } else {
+        onSave({ title: title.trim(), description: description.trim() || undefined, rank: rank ?? undefined, date });
+      }
+    }, 300);
   };
 
   return (
