@@ -6,6 +6,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8.0.1-646CFF?style=flat-square&logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.19-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black)
 ![Deployed on Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
 
 **[Live Demo →](https://taskly-daily-journal-planner.vercel.app/)**
@@ -35,6 +36,24 @@ Taskly is a frontend-only progressive web app — no backend, no account require
 - **Smooth animations** — task add/remove/reorder via `@formkit/auto-animate`; strikethrough animation on task complete
 - **PWA ready** — installable on mobile with `manifest.json`, standalone display mode, and custom favicon
 - **Daily quotes** — 365 real attributed quotes rotated by epoch day, no server call required
+- **Google sign-in** — optional account with cloud sync via Firebase; works fully offline without an account
+
+---
+
+## Account & Cloud Sync
+
+Taskly works entirely offline without an account — but signing in unlocks cloud sync across devices.
+
+**Authentication**
+- Sign in with Google via Firebase Authentication (one tap)
+- Popup-based auth with redirect fallback for broader browser compatibility
+- Bottom nav displays your Google profile photo when signed in, or a default icon when signed out
+
+**Cloud Sync (Firebase Firestore)**
+- Tasks, notes, and journal entries sync to Firestore in real time when signed in
+- Data is stored per-user under a unique account, enabling cross-device access
+- On first sign-in, local data is automatically migrated to the cloud — only if the cloud is empty, preventing any overwrites
+- Real-time listeners keep data in sync across tabs and devices
 
 ---
 
@@ -46,6 +65,7 @@ Taskly is a frontend-only progressive web app — no backend, no account require
 | TypeScript | 5.9.3 | Type safety across components and hooks |
 | Vite | 8.0.1 | Build tool and dev server with HMR |
 | Tailwind CSS | 3.4.19 | Utility-first styling, custom cream palette |
+| Firebase | — | Google Authentication + Firestore cloud sync |
 | date-fns | 4.1.0 | Date formatting, comparison, calendar utilities |
 | @formkit/auto-animate | 0.9.0 | Zero-config list animations |
 | Lucide React | 1.7.0 | Icon set for nav and UI controls |
