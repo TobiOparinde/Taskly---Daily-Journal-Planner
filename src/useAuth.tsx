@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import type { ReactNode } from 'react';
-import { onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut as fbSignOut } from 'firebase/auth';
+import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut as fbSignOut } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
 
@@ -25,7 +25,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getRedirectResult(auth).catch(() => {});
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
@@ -36,8 +35,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = useCallback(async () => {
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch {
-      await signInWithRedirect(auth, googleProvider);
+    } catch (e: any) {
+      if (e?.code === 'auth/popup-blocked' || e?.code === 'auth/cancelled-popup-request' ||
+          e?.code === 'auth/internal-error' || e?.code === 'auth/popup-closed-by-user') {
+        await signInWithRedirect(auth, googleProvider);
+      } else {
+        console.error('Sign-in error:', e);
+        alert('Sign-in failed: ' + (e instanceof Error ? e.message : e));
+      }
     }
   }, []);
 
