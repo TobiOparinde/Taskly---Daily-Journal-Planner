@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { FC } from 'react';
 import type { Task, DailyJournalEntry } from './types';
-import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { TaskCard } from './TaskCard';
 import { TaskModal } from './TaskModal';
 import { QuoteFooter } from './QuoteFooter';
@@ -29,7 +28,6 @@ const weekLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 export const TodayPage: FC<Props> = ({ tasks, onAdd, onUpdate, onDelete, onToggle }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const { journalByDate, updateJournal: updateJournalHook } = useJournal();
-  const [taskListRef] = useAutoAnimate({ duration: 220, easing: 'ease-out' });
   const selectedDateStr = toDateStr(selectedDate);
   const todayTasks = tasks.filter(t => t.date === selectedDateStr);
   const [modalOpen, setModalOpen] = useState(false);
@@ -161,7 +159,6 @@ export const TodayPage: FC<Props> = ({ tasks, onAdd, onUpdate, onDelete, onToggl
           </div>
           <div className="text-xs text-stone-400 mb-1.5">tasks today: {done}/{total}</div>
           <div
-            ref={taskListRef}
             className="flex-1 min-h-0 pr-1 overflow-y-auto hide-scrollbar"
             style={{ backgroundAttachment: 'local', backgroundImage: 'repeating-linear-gradient(to bottom, transparent 0, transparent 33px, rgba(120, 113, 108, 0.2) 33px, rgba(120, 113, 108, 0.2) 34px)' }}
           >

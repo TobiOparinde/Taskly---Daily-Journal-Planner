@@ -7,6 +7,7 @@ import { TodayPage } from './TodayPage';
 import { CalendarPage } from './CalendarPage';
 import { NotesPage } from './NotesPage';
 import { AccountPage } from './AccountPage';
+import { ErrorBoundary } from './ErrorBoundary';
 
 export default function App() {
   const [page, setPage] = useState<Page>('today');
@@ -31,6 +32,7 @@ export default function App() {
       style={{ height: '100dvh', maxWidth: '480px', margin: '0 auto' }}
     >
       <div className="flex-1 overflow-hidden min-h-0">
+        <ErrorBoundary>
         <div className={`h-full transition-opacity duration-150 ease-out ${fading ? 'opacity-0' : 'opacity-100'}`}>
           {displayPage === 'today' && (
             <TodayPage
@@ -57,6 +59,7 @@ export default function App() {
             <AccountPage />
           )}
         </div>
+        </ErrorBoundary>
       </div>
       <BottomNav current={page} onChange={handlePageChange} />
     </div>
