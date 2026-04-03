@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import type { Page } from './types';
-import { ListChecks, CalendarDays, FileText, UserRound, UserRoundCheck } from 'lucide-react';
+import { ListChecks, CalendarDays, FileText, UserRound, CloudUpload } from 'lucide-react';
 import { useAuth } from './useAuth';
 
 interface Props { current: Page; onChange: (p: Page) => void; }
@@ -34,8 +34,8 @@ export const BottomNav: FC<Props> = ({ current, onChange }) => {
         onClick={user ? signOut : signIn}
         className={`flex-1 flex flex-col items-center pt-3 pb-2 gap-0.5 transition-colors ${user ? 'text-stone-700' : 'text-stone-400'}`}
       >
-        {user ? <UserRoundCheck size={20} /> : <UserRound size={20} />}
-        <span className="text-[10px] font-medium tracking-wide">{user ? 'Sync' : 'Sign in'}</span>
+        {user ? <CloudUpload size={20} /> : <UserRound size={20} />}
+        <span className="text-[10px] font-medium tracking-wide">{user ? 'Synced' : 'Sign in'}</span>
         {user && <span className="w-1 h-1 rounded-full bg-stone-500" />}
       </button>
     </nav>
