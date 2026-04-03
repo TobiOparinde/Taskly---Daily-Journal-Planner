@@ -29,7 +29,7 @@ export const TodayPage: FC<Props> = ({ tasks, onAdd, onUpdate, onDelete, onToggl
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const { journalByDate, updateJournal: updateJournalHook } = useJournal();
   const selectedDateStr = toDateStr(selectedDate);
-  const todayTasks = tasks.filter(t => t.date === selectedDateStr);
+  const todayTasks = tasks.filter(t => t.date === selectedDateStr && t.source !== 'calendar');
   const [modalOpen, setModalOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
 
