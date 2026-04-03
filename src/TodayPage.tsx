@@ -6,7 +6,7 @@ import { TaskCard } from './TaskCard';
 import { TaskModal } from './TaskModal';
 import { QuoteFooter } from './QuoteFooter';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
-import { getDailyJournal, saveDailyJournal } from './storage';
+import { useJournal } from './useJournal';
 import { toDateStr } from './dateUtils';
 import { addDays, format, isFuture, isToday, isTomorrow, isYesterday } from 'date-fns';
 
@@ -28,7 +28,7 @@ const weekLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 export const TodayPage: FC<Props> = ({ tasks, onAdd, onUpdate, onDelete, onToggle }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [journalByDate, setJournalByDate] = useState<Record<string, DailyJournalEntry>>(() => getDailyJournal());
+  const { journalByDate, updateJournal: updateJournalHook } = useJournal();
   const [taskListRef] = useAutoAnimate({ duration: 220, easing: 'ease-out' });
   const selectedDateStr = toDateStr(selectedDate);
   const todayTasks = tasks.filter(t => t.date === selectedDateStr);
@@ -59,13 +59,7 @@ export const TodayPage: FC<Props> = ({ tasks, onAdd, onUpdate, onDelete, onToggl
           : 'Archive';
 
   const updateJournal = (updater: (entry: DailyJournalEntry) => DailyJournalEntry) => {
-    setJournalByDate(prev => {
-      const base = prev[selectedDateStr] ?? createEmptyJournal();
-      const nextForDate = updater(base);
-      const next = { ...prev, [selectedDateStr]: nextForDate };
-      saveDailyJournal(next);
-      return next;
-    });
+    updateJournalHook(selectedDateStr, updater);
   };
 
   const updateGratitude = (index: number, value: string) => {
@@ -88,11 +82,11 @@ export const TodayPage: FC<Props> = ({ tasks, onAdd, onUpdate, onDelete, onToggl
           </div>
           <div className="flex flex-col items-end gap-1.5 mt-0.5">
             <div className="flex items-center gap-1.5 text-[10px] tracking-widest text-stone-400">
-              {weekLabels.map((label, idx) => (
-                <span key={`${label}${idx}`} className={idx === weekIndex ? 'text-stone-700 font-semibold' : ''}>
-                  {label}
-                </span>
-              ))}
+                {weekLabels.map((label, idx) => (
+                  <span key={`${label}${idx}`} className={idx === weekIndex ? 'text-stone-700 font-semibold' : ''}>
+                    {label}
+                  </span>
+                ))}
             </div>
             <div className="flex items-center gap-1">
               <button

@@ -35,13 +35,13 @@ export default function App() {
   const slideClass =
     phase === 'exit'
       ? direction === 'left'
-        ? '-translate-x-[30%] opacity-0'
-        : 'translate-x-[30%] opacity-0'
+        ? '-translate-x-full'
+        : 'translate-x-full'
       : phase === 'enter'
         ? direction === 'left'
-          ? 'translate-x-[30%] opacity-0 !duration-0'
-          : '-translate-x-[30%] opacity-0 !duration-0'
-        : 'translate-x-0 opacity-100';
+          ? 'translate-x-full !duration-0'
+          : '-translate-x-full !duration-0'
+        : 'translate-x-0';
 
   return (
     <div
