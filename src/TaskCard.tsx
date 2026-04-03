@@ -16,7 +16,8 @@ const priorityColor: Record<string, string> = {
   C: 'text-emerald-300',
 };
 
-const DELETE_THRESHOLD = 80;
+const DELETE_THRESHOLD = 32;
+const MAX_SWIPE = 36;
 
 export const TaskCard: FC<Props> = ({ task, onToggle, onDelete, onEdit }) => {
   const cat = task.rank?.[0];
@@ -49,7 +50,7 @@ export const TaskCard: FC<Props> = ({ task, onToggle, onDelete, onEdit }) => {
     }
 
     if (locked.current && dx < 0) {
-      setOffsetX(dx);
+      setOffsetX(Math.max(dx, -MAX_SWIPE));
     }
   };
 
@@ -95,9 +96,9 @@ export const TaskCard: FC<Props> = ({ task, onToggle, onDelete, onEdit }) => {
             {task.completed && <Check size={8} className="absolute" strokeWidth={3} />}
           </span>
         </button>
-        <div className="flex-1 min-w-0 flex items-center gap-2 translate-y-px overflow-x-auto hide-scrollbar">
-          <div className="relative whitespace-nowrap flex-shrink-0">
-            <p className={`text-sm font-medium text-stone-800 transition-colors duration-300 ${task.completed ? 'text-stone-500' : ''}`}>
+        <div className="flex-1 min-w-0 flex items-center gap-2 translate-y-px overflow-hidden">
+          <div className="relative truncate">
+            <p className={`text-sm font-medium text-stone-800 transition-colors duration-300 truncate ${task.completed ? 'text-stone-500' : ''}`}>
               {task.title}
             </p>
             <span
@@ -106,7 +107,7 @@ export const TaskCard: FC<Props> = ({ task, onToggle, onDelete, onEdit }) => {
             />
           </div>
           {task.description && (
-            <p className={`text-xs whitespace-nowrap flex-shrink-0 transition-colors duration-300 ${task.completed ? 'text-stone-400' : 'text-stone-500'}`}>- {task.description}</p>
+            <p className={`text-xs truncate flex-shrink-0 transition-colors duration-300 ${task.completed ? 'text-stone-400' : 'text-stone-500'}`}>- {task.description}</p>
           )}
         </div>
         <div className="relative w-8 h-[34px] flex-shrink-0">
