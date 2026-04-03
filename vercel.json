@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/__/auth/:path*",
+      "destination": "https://taskly-c9195.firebaseapp.com/__/auth/:path*"
+    }
+  ]
+}

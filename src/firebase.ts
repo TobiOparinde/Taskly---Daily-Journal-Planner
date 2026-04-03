@@ -4,7 +4,7 @@ import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCRT0D_cw3t_L-tuF1qnwz9sJid-iqR52g",
-  authDomain: "taskly-c9195.firebaseapp.com",
+  authDomain: "taskly-daily-journal-planner.vercel.app",
   projectId: "taskly-c9195",
   storageBucket: "taskly-c9195.firebasestorage.app",
   messagingSenderId: "110892630266",
