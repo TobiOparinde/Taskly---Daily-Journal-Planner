@@ -3,7 +3,7 @@ import type { Note } from './types';
 import { getNotes, saveNotes, generateId } from './storage';
 import { useAuth } from './useAuth';
 import { db } from './firebase';
-import { collection, doc, setDoc, onSnapshot, writeBatch } from 'firebase/firestore';
+import { collection, doc, setDoc, onSnapshot, writeBatch, getDocs } from 'firebase/firestore';
 
 export const useNotes = () => {
   const { user } = useAuth();
@@ -21,15 +21,19 @@ export const useNotes = () => {
     return unsub;
   }, [user]);
 
-  // Upload local data on first sign-in
+  // Upload local data only if Firestore is empty (first-time setup)
   useEffect(() => {
     if (!user) return;
     const local = getNotes();
     if (local.length === 0) return;
     const col = collection(db, 'users', user.uid, 'notes');
-    const batch = writeBatch(db);
-    local.forEach(n => batch.set(doc(col, n.id), n));
-    batch.commit();
+    getDocs(col).then(snap => {
+      if (snap.empty) {
+        const batch = writeBatch(db);
+        local.forEach(n => batch.set(doc(col, n.id), n));
+        batch.commit();
+      }
+    });
   }, [user]);
 
   const getNoteForDate = useCallback((dateStr: string): Note | undefined =>

@@ -3,7 +3,7 @@ import type { Task } from './types';
 import { getTasks, saveTasks, generateId } from './storage';
 import { useAuth } from './useAuth';
 import { db } from './firebase';
-import { collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch } from 'firebase/firestore';
+import { collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, getDocs } from 'firebase/firestore';
 
 export const useTasks = () => {
   const { user } = useAuth();
@@ -21,15 +21,19 @@ export const useTasks = () => {
     return unsub;
   }, [user]);
 
-  // Upload local data on first sign-in
+  // Upload local data only if Firestore is empty (first-time setup)
   useEffect(() => {
     if (!user) return;
     const local = getTasks();
     if (local.length === 0) return;
     const col = collection(db, 'users', user.uid, 'tasks');
-    const batch = writeBatch(db);
-    local.forEach(t => batch.set(doc(col, t.id), t));
-    batch.commit();
+    getDocs(col).then(snap => {
+      if (snap.empty) {
+        const batch = writeBatch(db);
+        local.forEach(t => batch.set(doc(col, t.id), t));
+        batch.commit();
+      }
+    });
   }, [user]);
 
   const persist = useCallback((task: Task) => {

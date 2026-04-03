@@ -8,41 +8,22 @@ import { CalendarPage } from './CalendarPage';
 import { NotesPage } from './NotesPage';
 import { AccountPage } from './AccountPage';
 
-const pageIndex: Record<Page, number> = { today: 0, calendar: 1, notes: 2, account: 3 };
-
 export default function App() {
   const [page, setPage] = useState<Page>('today');
-  const [phase, setPhase] = useState<'idle' | 'exit' | 'enter'>('idle');
-  const [direction, setDirection] = useState<'left' | 'right'>('left');
   const [displayPage, setDisplayPage] = useState<Page>('today');
+  const [fading, setFading] = useState(false);
   const { tasks, addTask, updateTask, deleteTask, toggleTask } = useTasks();
   const { getNoteForDate, saveNote } = useNotes();
 
   const handlePageChange = (next: Page) => {
-    if (next === page || phase !== 'idle') return;
-    const dir = pageIndex[next] > pageIndex[page] ? 'left' : 'right';
-    setDirection(dir);
-    setPhase('exit');
+    if (next === page || fading) return;
+    setFading(true);
     setTimeout(() => {
       setDisplayPage(next);
       setPage(next);
-      setPhase('enter');
-      setTimeout(() => setPhase('idle'), 20);
-    }, 180);
+      setFading(false);
+    }, 150);
   };
-
-  // Exit: slide out in the direction of travel
-  // Enter: start offset on the incoming side, then animate to center
-  const slideClass =
-    phase === 'exit'
-      ? direction === 'left'
-        ? '-translate-x-full'
-        : 'translate-x-full'
-      : phase === 'enter'
-        ? direction === 'left'
-          ? 'translate-x-full !duration-0'
-          : '-translate-x-full !duration-0'
-        : 'translate-x-0';
 
   return (
     <div
@@ -50,7 +31,7 @@ export default function App() {
       style={{ height: '100dvh', maxWidth: '480px', margin: '0 auto' }}
     >
       <div className="flex-1 overflow-hidden min-h-0">
-        <div className={`h-full transition-all duration-200 ease-out ${slideClass}`}>
+        <div className={`h-full transition-opacity duration-150 ease-out ${fading ? 'opacity-0' : 'opacity-100'}`}>
           {displayPage === 'today' && (
             <TodayPage
               tasks={tasks}
