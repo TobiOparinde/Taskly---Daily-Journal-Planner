@@ -64,8 +64,6 @@ export const TaskCard: FC<Props> = ({ task, onToggle, onDelete, onEdit }) => {
     }
   };
 
-  const showDelete = offsetX < -30;
-
   return (
     <div className={`relative transition-all duration-250 ease-out ${dismissed ? 'h-0 overflow-hidden opacity-0' : 'h-[34px]'} ${offsetX < 0 ? 'overflow-hidden' : ''}`}>
       {/* Delete background — only rendered when swiping */}
