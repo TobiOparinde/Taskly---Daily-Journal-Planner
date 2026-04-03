@@ -1,10 +1,8 @@
 import { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import type { ReactNode } from 'react';
-import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut as fbSignOut } from 'firebase/auth';
+import { onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut as fbSignOut } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
-
-const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 interface AuthCtx {
   user: User | null;
@@ -27,6 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    getRedirectResult(auth).catch(() => {});
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
@@ -35,10 +34,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = useCallback(async () => {
-    if (isMobile) {
-      await signInWithRedirect(auth, googleProvider);
-    } else {
+    try {
       await signInWithPopup(auth, googleProvider);
+    } catch {
+      await signInWithRedirect(auth, googleProvider);
     }
   }, []);
 
