@@ -28,7 +28,7 @@ export const CalendarPage: FC<Props> = ({ tasks, onAdd, onUpdate, onToggle }) =>
     const days = getMonthDays(year, month);
     const monthStrs = days.map(d => toDateStr(d));
     return tasks
-      .filter(t => monthStrs.includes(t.date))
+      .filter(t => t.source === 'calendar' && monthStrs.includes(t.date))
       .sort((a, b) => {
         if (a.date !== b.date) return a.date.localeCompare(b.date);
         if (a.completed !== b.completed) return a.completed ? 1 : -1;
@@ -39,7 +39,7 @@ export const CalendarPage: FC<Props> = ({ tasks, onAdd, onUpdate, onToggle }) =>
   const done = monthTasks.filter(t => t.completed).length;
   const total = monthTasks.length;
 
-  const hasDot = useCallback((d: Date) => tasks.some(t => t.date === toDateStr(d)), [tasks]);
+  const hasDot = useCallback((d: Date) => tasks.some(t => t.source === 'calendar' && t.date === toDateStr(d)), [tasks]);
 
   // Group tasks by date
   const grouped = useMemo(() => {
@@ -116,7 +116,7 @@ export const CalendarPage: FC<Props> = ({ tasks, onAdd, onUpdate, onToggle }) =>
 
       {modalOpen && (
         <TaskModal task={editTask} defaultDate={toDateStr(selected)}
-          onSave={onAdd} onUpdate={onUpdate} hideRank
+          onSave={(data) => onAdd({ ...data, source: 'calendar' })} onUpdate={onUpdate} hideRank
           onClose={() => { setModalOpen(false); setEditTask(null); }} />
       )}
     </div>

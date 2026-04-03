@@ -6,8 +6,9 @@ import { BottomNav } from './BottomNav';
 import { TodayPage } from './TodayPage';
 import { CalendarPage } from './CalendarPage';
 import { NotesPage } from './NotesPage';
+import { AccountPage } from './AccountPage';
 
-const pageIndex: Record<Page, number> = { today: 0, calendar: 1, notes: 2 };
+const pageIndex: Record<Page, number> = { today: 0, calendar: 1, notes: 2, account: 3 };
 
 export default function App() {
   const [page, setPage] = useState<Page>('today');
@@ -70,6 +71,9 @@ export default function App() {
           )}
           {displayPage === 'notes' && (
             <NotesPage getNoteForDate={getNoteForDate} saveNote={saveNote} />
+          )}
+          {displayPage === 'account' && (
+            <AccountPage />
           )}
         </div>
       </div>

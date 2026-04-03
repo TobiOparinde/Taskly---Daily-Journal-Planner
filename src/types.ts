@@ -10,6 +10,7 @@ export interface Task {
   completed: boolean;
   date: string; // YYYY-MM-DD
   createdAt: string;
+  source?: 'today' | 'calendar';
 }
 
 export interface Note {
@@ -25,4 +26,4 @@ export interface DailyJournalEntry {
   reflection: string;
 }
 
-export type Page = 'today' | 'calendar' | 'notes';
+export type Page = 'today' | 'calendar' | 'notes' | 'account';

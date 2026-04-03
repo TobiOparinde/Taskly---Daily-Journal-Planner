@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import type { Page } from './types';
-import { ListChecks, CalendarDays, FileText, UserRound, CloudUpload } from 'lucide-react';
+import { ListChecks, CalendarDays, FileText, UserRound } from 'lucide-react';
 import { useAuth } from './useAuth';
 
 interface Props { current: Page; onChange: (p: Page) => void; }
@@ -12,7 +12,8 @@ const tabs = [
 ];
 
 export const BottomNav: FC<Props> = ({ current, onChange }) => {
-  const { user, signIn, signOut } = useAuth();
+  const { user } = useAuth();
+  const accountActive = current === 'account';
 
   return (
     <nav
@@ -31,12 +32,16 @@ export const BottomNav: FC<Props> = ({ current, onChange }) => {
         );
       })}
       <button
-        onClick={user ? signOut : signIn}
-        className={`flex-1 flex flex-col items-center pt-3 pb-2 gap-0.5 transition-colors ${user ? 'text-stone-700' : 'text-stone-400'}`}
+        onClick={() => onChange('account')}
+        className={`flex-1 flex flex-col items-center pt-3 pb-2 gap-0.5 transition-colors ${accountActive ? 'text-stone-700' : 'text-stone-400'}`}
       >
-        {user ? <CloudUpload size={20} /> : <UserRound size={20} />}
-        <span className="text-[10px] font-medium tracking-wide">{user ? 'Synced' : 'Sign in'}</span>
-        {user && <span className="w-1 h-1 rounded-full bg-stone-500" />}
+        {user?.photoURL ? (
+          <img src={user.photoURL} alt="" referrerPolicy="no-referrer" className="w-5 h-5 rounded-full" />
+        ) : (
+          <UserRound size={20} />
+        )}
+        <span className="text-[10px] font-medium tracking-wide">Account</span>
+        {accountActive && <span className="w-1 h-1 rounded-full bg-stone-500" />}
       </button>
     </nav>
   );
