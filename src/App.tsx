@@ -27,7 +27,7 @@ export default function App() {
 
   return (
     <div
-      className="flex flex-col bg-[#faf8f5]"
+      className="flex flex-col bg-[#faf8f5] overflow-x-hidden"
       style={{ height: '100dvh', maxWidth: '480px', margin: '0 auto' }}
     >
       <div className="flex-1 overflow-hidden min-h-0">
