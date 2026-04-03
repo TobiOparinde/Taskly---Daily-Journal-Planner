@@ -16,7 +16,11 @@ const priorityColor: Record<string, string> = {
 };
 
 export const TaskCard: FC<Props> = ({ task, onToggle, onDelete, onEdit }) => {
-  const cat = task.rank?.[0];
+  const rank = typeof task.rank === 'string' ? task.rank : '';
+  const cat = rank[0];
+  const level = rank[1];
+  const rankLabel = cat && level ? `${cat}${level}` : '';
+  const badgeColor = cat && priorityColor[cat] ? priorityColor[cat] : 'text-stone-300';
   return (
     <div className={`group h-[34px] flex items-center gap-2 transition-all duration-300 ${task.completed ? 'bg-stone-200/25' : ''}`}>
       <button
@@ -46,8 +50,8 @@ export const TaskCard: FC<Props> = ({ task, onToggle, onDelete, onEdit }) => {
       <div className="relative w-8 h-[34px] flex-shrink-0">
         <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 border-l border-stone-300/45" />
         <div className="absolute inset-y-0 left-0 right-0 pl-2 pr-0.5 flex items-center justify-center translate-y-px">
-          <span className={`text-[10px] font-semibold tracking-widest px-1 py-[1px] rounded-sm group-hover:hidden ${cat ? priorityColor[cat] : ''}`}>
-            {task.rank ? `${cat}${task.rank[1]}` : ''}
+          <span className={`text-[10px] font-semibold tracking-widest px-1 py-[1px] rounded-sm group-hover:hidden ${badgeColor}`}>
+            {rankLabel}
           </span>
           <div className="hidden group-hover:flex items-center gap-1">
             <button onClick={onEdit} className="p-0.5 rounded hover:bg-stone-100/70 text-stone-400 hover:text-stone-600 transition-colors">

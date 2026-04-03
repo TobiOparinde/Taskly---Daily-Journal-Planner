@@ -39,7 +39,9 @@ export const TodayPage: FC<Props> = ({ tasks, onAdd, onUpdate, onDelete, onToggl
     if (a.completed !== b.completed) {
       return a.completed ? 1 : -1;
     }
-    return (a.rank ?? 'Z9').localeCompare(b.rank ?? 'Z9');
+    const rankA = typeof a.rank === 'string' ? a.rank : 'Z9';
+    const rankB = typeof b.rank === 'string' ? b.rank : 'Z9';
+    return rankA.localeCompare(rankB);
   });
 
   const done = todayTasks.filter(t => t.completed).length;

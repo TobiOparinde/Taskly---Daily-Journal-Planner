@@ -30,7 +30,9 @@ export const CalendarPage: FC<Props> = ({ tasks, onAdd, onUpdate, onToggle }) =>
     return tasks
       .filter(t => t.source === 'calendar' && monthStrs.includes(t.date))
       .sort((a, b) => {
-        if (a.date !== b.date) return a.date.localeCompare(b.date);
+        const dateA = typeof a.date === 'string' ? a.date : '';
+        const dateB = typeof b.date === 'string' ? b.date : '';
+        if (dateA !== dateB) return dateA.localeCompare(dateB);
         if (a.completed !== b.completed) return a.completed ? 1 : -1;
         return 0;
       });
