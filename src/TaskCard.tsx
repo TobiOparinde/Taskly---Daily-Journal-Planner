@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import type { FC, TouchEvent } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
+import type { FC } from 'react';
 import type { Task } from './types';
 import { Trash2, Edit3, Check } from 'lucide-react';
 
@@ -26,22 +26,26 @@ export const TaskCard: FC<Props> = ({ task, onToggle, onDelete, onEdit }) => {
   const [dismissed, setDismissed] = useState(false);
   const startX = useRef(0);
   const startY = useRef(0);
-  const locked = useRef(false); // true = horizontal swipe locked in
+  const locked = useRef(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const swipingRef = useRef(false);
 
-  const onTouchStart = (e: TouchEvent) => {
+  const onTouchStart = useCallback((e: globalThis.TouchEvent) => {
     startX.current = e.touches[0].clientX;
     startY.current = e.touches[0].clientY;
     locked.current = false;
+    swipingRef.current = true;
     setSwiping(true);
-  };
+  }, []);
 
-  const onTouchMove = (e: TouchEvent) => {
-    if (!swiping) return;
+  const onTouchMove = useCallback((e: globalThis.TouchEvent) => {
+    if (!swipingRef.current) return;
     const dx = e.touches[0].clientX - startX.current;
     const dy = e.touches[0].clientY - startY.current;
 
     if (!locked.current) {
       if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 5) {
+        swipingRef.current = false;
         setSwiping(false);
         setOffsetX(0);
         return;
@@ -49,21 +53,40 @@ export const TaskCard: FC<Props> = ({ task, onToggle, onDelete, onEdit }) => {
       if (Math.abs(dx) > 5) locked.current = true;
     }
 
-    if (locked.current && dx < 0) {
-      setOffsetX(Math.max(dx, -MAX_SWIPE));
+    if (locked.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (dx < 0) {
+        setOffsetX(Math.max(dx, -MAX_SWIPE));
+      }
     }
-  };
+  }, []);
 
-  const onTouchEnd = () => {
-    if (!swiping) return;
+  const onTouchEnd = useCallback(() => {
+    if (!swipingRef.current) return;
+    swipingRef.current = false;
     setSwiping(false);
-    if (offsetX < -DELETE_THRESHOLD) {
-      setDismissed(true);
-      setTimeout(onDelete, 250);
-    } else {
-      setOffsetX(0);
-    }
-  };
+    setOffsetX(prev => {
+      if (prev < -DELETE_THRESHOLD) {
+        setDismissed(true);
+        setTimeout(onDelete, 250);
+      }
+      return prev < -DELETE_THRESHOLD ? prev : 0;
+    });
+  }, [onDelete]);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd, { passive: true });
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+    };
+  }, [onTouchStart, onTouchMove, onTouchEnd]);
 
   return (
     <div className={`relative transition-all duration-250 ease-out ${dismissed ? 'h-0 overflow-hidden opacity-0' : 'h-[34px]'} ${offsetX < 0 ? 'overflow-hidden' : ''}`}>
@@ -76,15 +99,13 @@ export const TaskCard: FC<Props> = ({ task, onToggle, onDelete, onEdit }) => {
 
       {/* Foreground card */}
       <div
+        ref={cardRef}
         className={`relative h-[34px] group flex items-center gap-2 ${task.completed ? 'bg-stone-200/25' : ''}`}
         style={{
           transform: `translateX(${offsetX}px)`,
           transition: swiping ? 'none' : 'transform 0.2s ease-out',
           backgroundColor: offsetX < 0 ? '#faf8f5' : undefined,
         }}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
       >
         <button
           onClick={onToggle}
