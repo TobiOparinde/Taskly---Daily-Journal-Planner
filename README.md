@@ -68,7 +68,8 @@ Taskly works entirely offline without an account — but signing in unlocks clou
 | Firebase | — | Google Authentication + Firestore cloud sync |
 | date-fns | 4.1.0 | Date formatting, comparison, calendar utilities |
 | @formkit/auto-animate | 0.9.0 | Zero-config list animations |
-| Lucide React | 1.7.0 | Icon set for nav and UI controls |
+| Vitest | 4.1 | Unit + component testing framework |
+| Testing Library | — | React component rendering + DOM assertions |
 | PostCSS + Autoprefixer | — | CSS processing pipeline |
 
 ---
@@ -98,6 +99,8 @@ npm run dev
 | `npm run build` | Type-check (`tsc -b`) then production build |
 | `npm run preview` | Preview production build locally |
 | `npm run lint` | Run ESLint with TypeScript + React Hooks plugins |
+| `npm test` | Run the full Vitest test suite (31 tests) |
+| `npm run test:watch` | Run tests in watch mode with auto-rerun on save |
 
 ---
 
@@ -120,9 +123,38 @@ src/
 ├── useNotes.ts          — Notes state management hook
 ├── storage.ts           — localStorage persistence layer
 ├── dateUtils.ts         — Date helper utilities
+├── ErrorBoundary.tsx    — React error boundary to prevent blank-screen crashes
+├── app.test.tsx         — Vitest test suite (31 tests across 7 groups)
+├── test-setup.ts        — Test environment setup (jest-dom matchers)
 ├── index.css            — Global styles + Tailwind directives
 └── main.tsx             — App entry point
 ```
+
+---
+
+## Testing
+
+Taskly includes a comprehensive test suite built with **Vitest** and **React Testing Library**, covering the core logic that handles task data throughout its lifecycle. Run with `npm test`.
+
+**31 tests across 7 groups:**
+
+| Group | Tests | What it covers |
+|---|---|---|
+| **Storage** | 4 | localStorage round-trip persistence, corrupted JSON recovery, unique ID generation |
+| **Firestore safety (`clean()`)** | 3 | Stripping `undefined` values before Firestore writes, verifying ranked tasks (A1–C3) survive serialisation |
+| **Task sorting** | 6 | Completed tasks sink to bottom, all 9 priority ranks sort A1→C3, A1 completed reorder, malformed/null rank values handled gracefully |
+| **Source filtering** | 4 | Calendar/monthly-goal tasks excluded from daily view, mixed-source filtering, date-scoped filtering |
+| **TaskCard rendering** | 7 | Every valid rank renders correctly, no-rank tasks render safely, completed styling applied, toggle callback fires, null/malformed rank doesn't crash, description displayed |
+| **Toggle round-trip** | 3 | Toggling A1 preserves the task in storage, toggling back and forth preserves all fields (rank, description, date) |
+| **Edge cases** | 4 | Empty list, single task, 100-task stress test, all optional fields undefined |
+
+**Key regression tests** — the suite specifically guards against a production bug where completing an A1-ranked task caused a blank screen and data loss:
+- Verifies A1 tasks persist after toggle (not silently dropped)
+- Verifies sort logic handles the A1→bottom reorder without throwing
+- Verifies `clean()` doesn't strip valid rank data before Firestore sync
+- Verifies TaskCard renders A1 badge without crashing on malformed data
+
+**Stack:** Vitest 4.1 · React Testing Library · jsdom · jest-dom matchers
 
 ---
 
