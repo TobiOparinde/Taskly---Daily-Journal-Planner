@@ -20,6 +20,9 @@
     -webkit-font-smoothing: antialiased;
     margin: 0;
   }
+  input, textarea {
+    font-family: 'Georgia', serif;
+  }
 }
 
 @layer utilities {
