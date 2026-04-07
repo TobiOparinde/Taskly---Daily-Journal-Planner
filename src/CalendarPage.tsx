@@ -102,7 +102,7 @@ export const CalendarPage: FC<Props> = ({ tasks, onAdd, onUpdate, onToggle }) =>
                         </span>
                         <span className={`text-sm transition-colors duration-300 ${
                           task.completed ? 'text-stone-400 line-through' : 'text-stone-700'
-                        }`} style={{ fontFamily: "'Georgia', serif" }}>
+                        }`}>
                           {task.title}
                         </span>
                       </div>

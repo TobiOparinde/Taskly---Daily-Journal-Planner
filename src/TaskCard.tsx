@@ -34,20 +34,16 @@ export const TaskCard: FC<Props> = ({ task, onToggle, onDelete, onEdit }) => {
         </span>
       </button>
       <div className="flex-1 min-w-0 flex items-center gap-2 translate-y-px overflow-hidden">
-        <div className="relative flex-shrink-0 max-w-[70%] overflow-x-auto hide-scrollbar">
-          <p className={`text-sm font-medium text-stone-800 transition-colors duration-300 whitespace-nowrap ${task.completed ? 'text-stone-500' : ''}`} style={{ fontFamily: "'Georgia', serif" }}>
-            {task.title}
-          </p>
+        <div className="relative flex-1 min-w-0 flex items-center overflow-x-auto hide-scrollbar whitespace-nowrap">
+          <span className={`text-sm font-medium text-stone-800 transition-colors duration-300 whitespace-nowrap ${task.completed ? 'text-stone-500' : ''}`}>{task.title}</span>
+          {task.description && (
+            <span className="text-xs transition-colors duration-300 ml-2 text-stone-500 whitespace-nowrap">- {task.description}</span>
+          )}
           <span
             aria-hidden="true"
             className={`pointer-events-none absolute left-0 top-1/2 h-px bg-stone-500/70 transition-all duration-300 ${task.completed ? 'w-full opacity-100' : 'w-0 opacity-0'}`}
           />
         </div>
-        {task.description && (
-          <div className="flex-1 min-w-0 overflow-x-auto hide-scrollbar">
-            <p className={`text-xs whitespace-nowrap transition-colors duration-300 ${task.completed ? 'text-stone-400' : 'text-stone-500'}`} style={{ fontFamily: "'Georgia', serif" }}>- {task.description}</p>
-          </div>
-        )}
       </div>
       <div className="relative w-8 h-[34px] flex-shrink-0">
         <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 border-l border-stone-300/45" />
