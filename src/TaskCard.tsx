@@ -34,8 +34,8 @@ export const TaskCard: FC<Props> = ({ task, onToggle, onDelete, onEdit }) => {
         </span>
       </button>
       <div className="flex-1 min-w-0 flex items-center gap-2 translate-y-px overflow-hidden">
-        <div className="relative truncate">
-          <p className={`text-sm font-medium text-stone-800 transition-colors duration-300 truncate ${task.completed ? 'text-stone-500' : ''}`}>
+        <div className="relative overflow-x-auto hide-scrollbar">
+          <p className={`text-sm font-medium text-stone-800 transition-colors duration-300 whitespace-nowrap ${task.completed ? 'text-stone-500' : ''}`}>
             {task.title}
           </p>
           <span
@@ -44,7 +44,7 @@ export const TaskCard: FC<Props> = ({ task, onToggle, onDelete, onEdit }) => {
           />
         </div>
         {task.description && (
-          <p className={`text-xs truncate flex-shrink-0 transition-colors duration-300 ${task.completed ? 'text-stone-400' : 'text-stone-500'}`}>- {task.description}</p>
+          <p className={`text-xs truncate flex-shrink transition-colors duration-300 ${task.completed ? 'text-stone-400' : 'text-stone-500'}`}>- {task.description}</p>
         )}
       </div>
       <div className="relative w-8 h-[34px] flex-shrink-0">

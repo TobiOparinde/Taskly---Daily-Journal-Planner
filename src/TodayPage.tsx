@@ -159,7 +159,7 @@ export const TodayPage: FC<Props> = ({ tasks, onAdd, onUpdate, onDelete, onToggl
           </div>
           <div className="text-xs text-stone-400 mb-1.5">tasks today: {done}/{total}</div>
           <div
-            className="flex-1 min-h-0 pr-1 overflow-y-auto hide-scrollbar"
+            className="flex-1 min-h-0 pr-1 overflow-y-auto overflow-x-hidden hide-scrollbar"
             style={{ backgroundAttachment: 'local', backgroundImage: 'repeating-linear-gradient(to bottom, transparent 0, transparent 33px, rgba(120, 113, 108, 0.2) 33px, rgba(120, 113, 108, 0.2) 34px)' }}
           >
             {sortedTasks.map(task => (
