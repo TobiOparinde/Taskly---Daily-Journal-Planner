@@ -1,0 +1,93 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidDate(value) {
+      return value is string && value.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+    }
+
+    function isValidIsoTimestamp(value) {
+      return value is string && value.size() >= 20 && value.size() <= 40;
+    }
+
+    function hasOptionalString(field, maxLength) {
+      return !(field in request.resource.data)
+        || (request.resource.data[field] is string
+          && request.resource.data[field].size() <= maxLength);
+    }
+
+    function hasOptionalRank() {
+      return !('rank' in request.resource.data)
+        || request.resource.data.rank in ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
+    }
+
+    function hasOptionalSource() {
+      return !('source' in request.resource.data)
+        || request.resource.data.source in ['today', 'calendar'];
+    }
+
+    function isValidTask(taskId) {
+      return request.resource.data.keys().hasOnly([
+          'id',
+          'title',
+          'description',
+          'rank',
+          'completed',
+          'date',
+          'createdAt',
+          'source'
+        ])
+        && request.resource.data.keys().hasAll(['id', 'title', 'completed', 'date', 'createdAt'])
+        && request.resource.data.id == taskId
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 200
+        && request.resource.data.completed is bool
+        && isValidDate(request.resource.data.date)
+        && isValidIsoTimestamp(request.resource.data.createdAt)
+        && hasOptionalString('description', 2000)
+        && hasOptionalRank()
+        && hasOptionalSource();
+    }
+
+    function isValidNote(noteId) {
+      return request.resource.data.keys().hasOnly(['id', 'date', 'content', 'updatedAt'])
+        && request.resource.data.keys().hasAll(['id', 'date', 'content', 'updatedAt'])
+        && request.resource.data.id == noteId
+        && isValidDate(request.resource.data.date)
+        && request.resource.data.content is string
+        && request.resource.data.content.size() <= 20000
+        && isValidIsoTimestamp(request.resource.data.updatedAt);
+    }
+
+    match /users/{userId}/tasks/{taskId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidTask(taskId);
+      allow delete: if isOwner(userId);
+    }
+
+    match /users/{userId}/notes/{noteId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidNote(noteId);
+    }
+
+    match /users/{userId}/data/journal {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId)
+        && request.resource.data is map
+        && request.resource.data.size() <= 5000;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
