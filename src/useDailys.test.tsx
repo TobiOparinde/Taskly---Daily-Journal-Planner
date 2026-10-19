@@ -1,6 +1,8 @@
 import { act, cleanup, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDailys } from './useDailys';
+vi.mock('./useAuth', () => ({ useAuth: () => ({ user: null, loading: false }) }));
+vi.mock('./firebase', () => ({ db: {} }));
 
 describe('recurring dailys', () => {
   beforeEach(() => {

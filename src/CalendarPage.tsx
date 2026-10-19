@@ -20,7 +20,7 @@ interface Props {
 export const CalendarPage: FC<Props> = ({ tasks }) => {
   const [chosenDate, setSelected] = useState<Date | null>(null);
   const [title, setTitle] = useState('');
-  const { dailys, today, addDaily, removeDaily, toggleDaily } = useDailys(chosenDate ? toDateStr(chosenDate) : undefined);
+  const { dailys, today, addDaily, removeDaily, toggleDaily, ready, syncError } = useDailys(chosenDate ? toDateStr(chosenDate) : undefined);
   const selected = chosenDate ?? new Date(today + 'T00:00:00');
   const selectedDate = toDateStr(selected);
   const isToday = selectedDate === today;
@@ -50,10 +50,12 @@ export const CalendarPage: FC<Props> = ({ tasks }) => {
           <input aria-label="New daily" value={title} onChange={event => setTitle(event.target.value)} maxLength={200}
             placeholder="Add a daily, e.g. Take vitamin"
             className="w-full min-w-0 rounded-xl border border-stone-200 bg-white/70 px-3 py-2.5 text-sm text-stone-700 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-stone-300" />
-          <button type="submit" aria-label="Add daily" disabled={!title.trim()}
+          <button type="submit" aria-label="Add daily" disabled={!ready || !title.trim()}
             className="flex items-center justify-center rounded-xl bg-stone-700 text-white hover:bg-stone-800 disabled:opacity-40 transition-colors"><Plus size={18} /></button>
         </form> : <button onClick={() => setSelected(null)} className="self-start text-xs text-stone-600 underline underline-offset-4 mb-3">Back to today</button>}
 
+        {syncError && <p role="alert" className="text-xs text-red-600 mb-2">{syncError}</p>}
+        {!ready && !syncError && <p role="status" className="text-xs text-stone-500 mb-2">Loading your dailys…</p>}
         <div className="flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar min-h-0 min-w-0">
           {dailys.length === 0 ? (
             <div className="rounded-xl border border-dashed border-stone-200 text-center px-4 py-6">
@@ -66,9 +68,9 @@ export const CalendarPage: FC<Props> = ({ tasks }) => {
                 const checked = item.completedOn === selectedDate;
                 return (
                   <li key={item.id} className="flex min-w-0 items-center gap-3 pl-3 pr-1 py-1.5 rounded-xl border border-stone-200 bg-white/50">
-                    <input aria-label={item.title} type="checkbox" checked={checked} disabled={!isToday} onChange={() => toggleDaily(item.id)} className="w-4 h-4 flex-shrink-0 accent-stone-700 cursor-pointer disabled:cursor-default" />
+                    <input aria-label={item.title} type="checkbox" checked={checked} disabled={!isToday || !ready} onChange={() => toggleDaily(item.id)} className="w-4 h-4 flex-shrink-0 accent-stone-700 cursor-pointer disabled:cursor-default" />
                     <ScrollText label={item.title} className={`py-1 text-sm ${checked ? 'text-stone-400 line-through' : 'text-stone-700'}`}>{item.title}</ScrollText>
-                    {isToday && <button aria-label={`Remove ${item.title}`} onClick={() => removeDaily(item.id)} className="flex-shrink-0 p-2.5 text-stone-400 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>}
+                    {isToday && <button disabled={!ready} aria-label={`Remove ${item.title}`} onClick={() => removeDaily(item.id)} className="flex-shrink-0 p-2.5 text-stone-400 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>}
                   </li>
                 );
               })}

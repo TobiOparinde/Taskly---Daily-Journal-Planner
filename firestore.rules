@@ -74,6 +74,21 @@ service cloud.firestore {
       allow delete: if isOwner(userId);
     }
 
+    match /users/{userId}/dailys/{dailyId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId)
+        && request.resource.data.keys().hasOnly(['id', 'title', 'createdOn', 'removedOn', 'completedDates'])
+        && request.resource.data.keys().hasAll(['id', 'title', 'createdOn', 'removedOn', 'completedDates'])
+        && request.resource.data.id == dailyId
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 200
+        && isValidDate(request.resource.data.createdOn)
+        && (request.resource.data.removedOn == null || isValidDate(request.resource.data.removedOn))
+        && request.resource.data.completedDates is list
+        && request.resource.data.completedDates.size() <= 20000;
+    }
+
     match /users/{userId}/notes/{noteId} {
       allow read: if isOwner(userId);
       allow create, update: if isOwner(userId) && isValidNote(noteId);

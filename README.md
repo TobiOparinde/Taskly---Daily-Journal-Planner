@@ -50,7 +50,9 @@ Taskly works entirely offline without an account — but signing in unlocks clou
 - Bottom nav displays your Google profile photo when signed in, or a default icon when signed out
 
 **Cloud Sync (Firebase Firestore)**
-- Tasks, notes, and journal entries sync to Firestore in real time when signed in
+- Tasks, recurring Dailys (including completion history), notes, and journal entries sync to Firestore in real time when signed in
+- Existing browser-only Dailys migrate into the first signed-in account that opens Calendar. Open Calendar on each device with existing Dailys after updating. Account caches are stored separately; migration never overwrites an existing cloud daily.
+- Dailys require the owner-only `/users/{userId}/dailys/{dailyId}` rules in `firestore.rules`. Deploy with `npx firebase-tools deploy --only firestore:rules --project taskly-c9195` before releasing the updated app.
 - Data is stored per-user under a unique account, enabling cross-device access
 - On first sign-in, local data is automatically migrated to the cloud — only if the cloud is empty, preventing any overwrites
 - Real-time listeners keep data in sync across tabs and devices
